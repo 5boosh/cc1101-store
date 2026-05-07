@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LILYGO T-Embed CC1101+ | مبرمج وجاهز</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Cairo:wght@300;400;600;700&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+:root{--cyan:#00d4ff;--cyan2:#0099bb;--card:#06111e;--border:#0a2a40;--text:#90bcd4;}
+body{background:#000;color:#e0f0ff;font-family:'Cairo',sans-serif;overflow-x:hidden;direction:rtl;}
+
+/* NAV */
+nav{position:sticky;top:0;z-index:100;background:rgba(0,0,0,0.94);border-bottom:1px solid #0a2030;backdrop-filter:blur(16px);display:flex;align-items:center;justify-content:space-between;padding:0 48px;height:62px;}
+.logo{font-family:'Orbitron',monospace;font-size:18px;font-weight:900;color:var(--cyan);letter-spacing:3px;text-shadow:0 0 20px rgba(0,212,255,.4);}
+.nav-links{display:flex;gap:32px;}
+.nav-links a{color:var(--text);font-size:14px;text-decoration:none;cursor:pointer;transition:color .2s;}
+.nav-links a:hover{color:var(--cyan);}
+
+/* HERO */
+.hero{min-height:100vh;display:flex;align-items:center;padding:72px 48px 48px;position:relative;overflow:hidden;background:#000;}
+canvas#waveBg{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:0;}
+.hero-inner{position:relative;z-index:2;display:grid;grid-template-columns:1fr 1fr;gap:60px;align-items:center;max-width:1200px;width:100%;margin:0 auto;}
+
+/* IMAGE */
+.img-wrap{position:relative;display:flex;align-items:center;justify-content:center;cursor:pointer;}
+.device-img{
+  width:440px;height:auto;display:block;
+  mix-blend-mode:lighten;
+  filter:drop-shadow(0 0 60px rgba(0,212,255,.3)) drop-shadow(0 0 120px rgba(0,212,255,.1)) brightness(1.08) contrast(1.05);
+  transition:filter .35s;pointer-events:none;user-select:none;
+}
+.img-wrap:hover .device-img{
+  filter:drop-shadow(0 0 90px rgba(0,212,255,.55)) drop-shadow(0 0 160px rgba(0,212,255,.18)) brightness(1.12) contrast(1.07);
+}
+.bracket{position:absolute;width:22px;height:22px;transition:all .3s;}
+.bracket.tl{top:-4px;left:-4px;border-top:2px solid rgba(0,212,255,.5);border-left:2px solid rgba(0,212,255,.5);}
+.bracket.tr{top:-4px;right:-4px;border-top:2px solid rgba(0,212,255,.5);border-right:2px solid rgba(0,212,255,.5);}
+.bracket.bl{bottom:-4px;left:-4px;border-bottom:2px solid rgba(0,212,255,.5);border-left:2px solid rgba(0,212,255,.5);}
+.bracket.br{bottom:-4px;right:-4px;border-bottom:2px solid rgba(0,212,255,.5);border-right:2px solid rgba(0,212,255,.5);}
+.img-wrap:hover .bracket{border-color:rgba(0,212,255,.9);}
+.float-pill{position:absolute;display:flex;align-items:center;gap:7px;background:rgba(0,6,14,.92);border:1px solid rgba(0,212,255,.22);border-radius:20px;padding:6px 13px;opacity:0;transition:all .4s ease;font-family:'Courier New',monospace;}
+.img-wrap:hover .float-pill{opacity:1;}
+.fp1{top:6%;right:-158px;transition-delay:.04s;}
+.fp2{top:32%;right:-164px;transition-delay:.1s;}
+.fp3{bottom:14%;right:-150px;transition-delay:.16s;}
+.fp4{top:18%;left:-160px;transition-delay:.07s;}
+.fp5{bottom:22%;left:-150px;transition-delay:.13s;}
+.pdot{width:7px;height:7px;border-radius:50%;flex-shrink:0;}
+.ptxt{font-size:11px;letter-spacing:.5px;color:var(--cyan);white-space:nowrap;}
+
+/* HERO TEXT */
+.hero-badge{display:inline-flex;align-items:center;gap:8px;background:rgba(0,212,255,.07);border:1px solid rgba(0,212,255,.28);border-radius:20px;padding:6px 18px;font-size:11px;color:var(--cyan);letter-spacing:2px;margin-bottom:24px;font-family:'Courier New',monospace;}
+.badge-dot{width:7px;height:7px;border-radius:50%;background:var(--cyan);animation:bdot 1.5s ease-in-out infinite;}
+@keyframes bdot{0%,100%{opacity:1;transform:scale(1);}50%{opacity:.3;transform:scale(.65);}}
+h1{font-family:'Orbitron',monospace;font-size:46px;font-weight:900;line-height:1.1;color:#fff;margin-bottom:16px;}
+h1 span{color:var(--cyan);}
+.hero-sub{font-size:15px;color:var(--text);line-height:1.9;margin-bottom:32px;}
+.hero-btns{display:flex;gap:14px;flex-wrap:wrap;}
+.btn-p{background:var(--cyan);color:#000;border:none;padding:14px 32px;font-family:'Cairo',sans-serif;font-size:15px;font-weight:700;border-radius:5px;cursor:pointer;transition:all .2s;box-shadow:0 0 30px rgba(0,212,255,.28);}
+.btn-p:hover{transform:translateY(-2px);box-shadow:0 0 52px rgba(0,212,255,.5);}
+.btn-s{background:transparent;color:var(--cyan);border:1px solid var(--cyan);padding:14px 32px;font-family:'Cairo',sans-serif;font-size:15px;font-weight:600;border-radius:5px;cursor:pointer;transition:all .2s;}
+.btn-s:hover{background:rgba(0,212,255,.08);}
+
+/* STATS */
+.stats-bar{background:#030b13;border-top:1px solid #0a1e2a;border-bottom:1px solid #0a1e2a;padding:24px 48px;display:grid;grid-template-columns:repeat(4,1fr);text-align:center;}
+.stat-item{border-left:1px solid #0a1e2a;padding:0 20px;}
+.stat-item:last-child{border-right:1px solid #0a1e2a;}
+.stat-n{font-family:'Orbitron',monospace;font-size:26px;font-weight:700;color:var(--cyan);display:block;}
+.stat-l{font-size:12px;color:var(--text);margin-top:4px;}
+
+/* SECTIONS */
+.sec{padding:76px 48px;max-width:1200px;margin:0 auto;}
+.sec-hd{text-align:center;margin-bottom:54px;}
+.sec-tag{font-size:11px;letter-spacing:3px;color:var(--cyan);margin-bottom:10px;font-family:'Courier New',monospace;}
+h2{font-family:'Orbitron',monospace;font-size:30px;font-weight:700;color:#fff;margin-bottom:10px;}
+.sec-desc{font-size:14px;color:var(--text);max-width:500px;margin:0 auto;}
+
+/* FEATURES */
+.feats-section{position:relative;overflow:hidden;}
+canvas.waveLayer{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:0;opacity:.5;}
+.feat-grid{position:relative;z-index:1;display:grid;grid-template-columns:repeat(3,1fr);gap:22px;}
+.feat-card{background:rgba(6,17,30,.88);border:1px solid #0a1e2a;border-radius:12px;padding:28px;position:relative;overflow:hidden;transition:all .3s;backdrop-filter:blur(4px);}
+.feat-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--cyan),transparent);opacity:0;transition:opacity .3s;}
+.feat-card:hover{border-color:rgba(0,212,255,.3);transform:translateY(-4px);}
+.feat-card:hover::before{opacity:1;}
+.feat-icon{font-size:26px;margin-bottom:14px;}
+.feat-title{font-size:15px;font-weight:700;color:#fff;margin-bottom:8px;}
+.feat-desc{font-size:13px;color:var(--text);line-height:1.75;}
+
+/* SPECS */
+.specs-bg{background:#030a12;border-top:1px solid #0a1e2a;border-bottom:1px solid #0a1e2a;position:relative;overflow:hidden;}
+.specs-wrap{display:grid;grid-template-columns:1fr 1fr;gap:44px;align-items:start;}
+.spec-group{margin-bottom:30px;}
+.spec-gtitle{font-size:10px;letter-spacing:2px;color:var(--cyan);margin-bottom:14px;border-bottom:1px solid #0a1e2a;padding-bottom:8px;font-family:'Courier New',monospace;}
+.spec-row{display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid rgba(10,30,42,.5);}
+.spec-k{font-size:13px;color:var(--text);}
+.spec-v{font-size:13px;color:#fff;font-weight:600;}
+.spec-badge{background:rgba(0,212,255,.1);border:1px solid rgba(0,212,255,.3);color:var(--cyan);font-size:10px;padding:3px 10px;border-radius:3px;font-family:'Courier New',monospace;}
+.freq-box{background:rgba(6,17,30,.9);border:1px solid #0a1e2a;border-radius:12px;padding:24px;position:sticky;top:74px;}
+.freq-title{font-size:10px;letter-spacing:2px;color:var(--cyan);margin-bottom:20px;font-family:'Courier New',monospace;}
+.freq-item{margin-bottom:18px;}
+.freq-row{display:flex;justify-content:space-between;margin-bottom:6px;font-size:12px;}
+.freq-nm{color:var(--text);}
+.freq-hz{color:var(--cyan);font-family:'Courier New',monospace;font-size:10px;}
+.fbar-bg{height:3px;background:#0a1525;border-radius:2px;overflow:hidden;}
+.fbar-fill{height:100%;border-radius:2px;background:linear-gradient(90deg,var(--cyan2),var(--cyan));animation:barIn .9s ease-out forwards;width:0;}
+@keyframes barIn{to{width:var(--w);}}
+
+/* ORDER */
+.order-bg{position:relative;overflow:hidden;}
+.order-wrap{background:rgba(6,17,30,.9);border:1px solid #0a1e2a;border-radius:16px;padding:48px;display:grid;grid-template-columns:1fr 1fr;gap:48px;align-items:start;position:relative;z-index:1;}
+.price{font-family:'Orbitron',monospace;font-size:42px;font-weight:900;color:var(--cyan);margin-bottom:6px;text-shadow:0 0 28px rgba(0,212,255,.3);}
+.price-sub{font-size:13px;color:var(--text);margin-bottom:24px;}
+.order-feats{list-style:none;margin-bottom:28px;}
+.order-feats li{padding:8px 0;font-size:14px;color:var(--text);display:flex;align-items:center;gap:8px;border-bottom:1px solid rgba(10,30,42,.4);}
+.chk{color:var(--cyan);font-weight:700;font-size:16px;}
+.oform{display:flex;flex-direction:column;gap:16px;}
+.flabel{font-size:12px;color:var(--text);margin-bottom:5px;letter-spacing:1px;}
+.finput{width:100%;background:#020a12;border:1px solid #0a1e2a;border-radius:6px;padding:12px 14px;color:#fff;font-family:'Cairo',sans-serif;font-size:14px;transition:border .2s;text-align:right;}
+.finput:focus{outline:none;border-color:var(--cyan);}
+.qty-row{display:flex;gap:10px;align-items:center;}
+.qty-btn{width:36px;height:36px;background:rgba(0,212,255,.08);border:1px solid #0a1e2a;color:var(--cyan);font-size:18px;border-radius:4px;cursor:pointer;transition:all .2s;font-family:'Cairo',sans-serif;}
+.qty-btn:hover{background:rgba(0,212,255,.16);border-color:var(--cyan);}
+.qty-n{font-family:'Orbitron',monospace;font-size:18px;color:#fff;min-width:30px;text-align:center;}
+
+/* FOOTER */
+footer{background:#030b13;border-top:1px solid #0a1e2a;padding:32px 48px;text-align:center;}
+.foot-logo{font-family:'Orbitron',monospace;font-size:16px;color:var(--cyan);margin-bottom:10px;letter-spacing:3px;}
+.foot-txt{font-size:12px;color:var(--text);}
+
+/* MODAL */
+.modal-bg{display:none;position:fixed;inset:0;z-index:200;background:rgba(0,0,0,.85);align-items:center;justify-content:center;}
+.modal-bg.open{display:flex;}
+.modal{background:#040f1f;border:1px solid rgba(0,212,255,.3);border-radius:14px;padding:40px;max-width:460px;width:90%;position:relative;text-align:center;}
+.modal-close{position:absolute;top:14px;left:14px;background:none;border:none;color:var(--text);font-size:22px;cursor:pointer;}
+.modal h3{font-family:'Orbitron',monospace;color:var(--cyan);font-size:18px;margin-bottom:10px;}
+.modal p{font-size:14px;color:var(--text);margin-bottom:26px;line-height:1.7;}
+
+/* RESPONSIVE */
+@media(max-width:960px){
+  .hero-inner,.specs-wrap,.order-wrap{grid-template-columns:1fr;}
+  .feat-grid{grid-template-columns:1fr 1fr;}
+  .stats-bar{grid-template-columns:1fr 1fr;}
+  nav{padding:0 24px;}
+  .sec{padding:56px 24px;}
+  .hero{padding:72px 24px 40px;}
+  h1{font-size:34px;}
+  .device-img{width:300px;}
+  .float-pill{display:none;}
+}
+@media(max-width:600px){
+  .feat-grid{grid-template-columns:1fr;}
+  h1{font-size:28px;}
+  .stats-bar{grid-template-columns:1fr 1fr;padding:18px 16px;}
+}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-links">
+    <a onclick="s('order')">اطلب الآن</a>
+    <a onclick="s('specs')">المواصفات</a>
+    <a onclick="s('feats')">الميزات</a>
+  </div>
+  <div class="logo">CC1101+</div>
+</nav>
+
+<!-- HERO -->
+<div class="hero" id="heroSection">
+  <canvas id="waveBg"></canvas>
+  <div class="hero-inner">
+    <div class="img-wrap" id="imgWrap">
+      <img class="device-img" src="https://i.ibb.co/5gXmkPQz/image.png" alt="LILYGO T-Embed CC1101 Plus"/>
+      <div class="bracket tl"></div><div class="bracket tr"></div>
+      <div class="bracket bl"></div><div class="bracket br"></div>
+      <div class="float-pill fp1"><div class="pdot" style="background:#00d4ff"></div><div class="ptxt">ESP32-S3 · 240MHz</div></div>
+      <div class="float-pill fp2"><div class="pdot" style="background:#00ff88"></div><div class="ptxt">WiFi + BT 5.0</div></div>
+      <div class="float-pill fp3"><div class="pdot" style="background:#ff6688"></div><div class="ptxt">مبرمج وجاهز</div></div>
+      <div class="float-pill fp4"><div class="pdot" style="background:#ffaa00"></div><div class="ptxt">Sub-GHz CC1101</div></div>
+      <div class="float-pill fp5"><div class="pdot" style="background:#aa88ff"></div><div class="ptxt">3 هوائيات خارجية</div></div>
+    </div>
+    <div>
+      <div class="hero-badge"><div class="badge-dot"></div>جاهز للشحن الآن</div>
+      <h1>LILYGO<br>T-Embed<br><span>CC1101+</span></h1>
+      <p class="hero-sub">لوحة تطوير متكاملة مبرمجة ومجهزة — ESP32-S3 مع دعم ترددات Sub-GHz وWiFi وBluetooth في جهاز واحد احترافي.</p>
+      <div class="hero-btns">
+        <button class="btn-p" onclick="s('order')">اطلب الآن</button>
+        <button class="btn-s" onclick="s('feats')">استعرض الميزات</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- STATS -->
+<div class="stats-bar">
+  <div class="stat-item"><span class="stat-n">3</span><div class="stat-l">هوائيات خارجية</div></div>
+  <div class="stat-item"><span class="stat-n">240MHz</span><div class="stat-l">سرعة المعالج</div></div>
+  <div class="stat-item"><span class="stat-n">2.4GHz</span><div class="stat-l">WiFi + Bluetooth</div></div>
+  <div class="stat-item"><span class="stat-n">&lt;1GHz</span><div class="stat-l">Sub-G CC1101</div></div>
+</div>
+
+<!-- FEATURES -->
+<div class="feats-section" id="feats">
+  <canvas class="waveLayer" id="waveFeat"></canvas>
+  <div class="sec">
+    <div class="sec-hd">
+      <div class="sec-tag">// الوظائف</div>
+      <h2>ما يقدر يسويه الجهاز</h2>
+      <p class="sec-desc">مبرمج ومجهز للعمل فوراً بأقوى مميزات الترددات اللاسلكية</p>
+    </div>
+    <div class="feat-grid">
+      <div class="feat-card"><div class="feat-icon">📡</div><div class="feat-title">استقبال وإرسال Sub-GHz</div><p class="feat-desc">دعم كامل لترددات 300–928 MHz عبر CC1101 — مناسب لتحليل أجهزة التحكم عن بُعد والبوابات الذكية.</p></div>
+      <div class="feat-card"><div class="feat-icon">📶</div><div class="feat-title">WiFi و Bluetooth 5.0</div><p class="feat-desc">ESP32-S3 مع WiFi 2.4GHz وBluetooth 5.0 للاتصال اللاسلكي الشامل في نفس اللوحة.</p></div>
+      <div class="feat-card"><div class="feat-icon">🖥️</div><div class="feat-title">شاشة LCD ملونة</div><p class="feat-desc">عرض البيانات والترددات في الوقت الفعلي على شاشة ملونة واضحة مدمجة بالجهاز.</p></div>
+      <div class="feat-card"><div class="feat-icon">🔊</div><div class="feat-title">مكبر صوت WS2812</div><p class="feat-desc">وحدة صوت مدمجة لتشغيل نغمات وتنبيهات صوتية مباشرة من الجهاز دون إضافات.</p></div>
+      <div class="feat-card"><div class="feat-icon">⚡</div><div class="feat-title">ESP32-S3 قوي</div><p class="feat-desc">معالج مزدوج النواة 240MHz مع 8MB Flash وذاكرة وافية لأي مشروع متقدم.</p></div>
+      <div class="feat-card"><div class="feat-icon">🔧</div><div class="feat-title">مبرمج ومخصص</div><p class="feat-desc">يصلك جاهزاً ومبرمجاً — وقابل للتعديل والتطوير حسب احتياجات مشروعك.</p></div>
+    </div>
+  </div>
+</div>
+
+<!-- SPECS -->
+<div class="specs-bg" id="specs">
+  <canvas class="waveLayer" id="waveSpec"></canvas>
+  <div style="position:relative;z-index:1;">
+    <div class="sec">
+      <div class="sec-hd">
+        <div class="sec-tag">// المواصفات التقنية</div>
+        <h2>كل التفاصيل</h2>
+      </div>
+      <div class="specs-wrap">
+        <div>
+          <div class="spec-group">
+            <div class="spec-gtitle">// المعالج والذاكرة</div>
+            <div class="spec-row"><span class="spec-k">المعالج</span><span class="spec-v">ESP32-S3</span></div>
+            <div class="spec-row"><span class="spec-k">السرعة</span><span class="spec-v"><span class="spec-badge">240 MHz</span></span></div>
+            <div class="spec-row"><span class="spec-k">Flash</span><span class="spec-v">8 MB</span></div>
+            <div class="spec-row"><span class="spec-k">RAM</span><span class="spec-v">512 KB</span></div>
+          </div>
+          <div class="spec-group">
+            <div class="spec-gtitle">// الاتصال اللاسلكي</div>
+            <div class="spec-row"><span class="spec-k">WiFi</span><span class="spec-v">802.11 b/g/n (2.4GHz)</span></div>
+            <div class="spec-row"><span class="spec-k">Bluetooth</span><span class="spec-v">BT 5.0 / BLE</span></div>
+            <div class="spec-row"><span class="spec-k">Sub-GHz</span><span class="spec-v"><span class="spec-badge">CC1101</span></span></div>
+            <div class="spec-row"><span class="spec-k">نطاق التردد</span><span class="spec-v">300 – 928 MHz</span></div>
+          </div>
+          <div class="spec-group">
+            <div class="spec-gtitle">// المكونات المادية</div>
+            <div class="spec-row"><span class="spec-k">الشاشة</span><span class="spec-v">LCD ملون</span></div>
+            <div class="spec-row"><span class="spec-k">الهوائيات</span><span class="spec-v">3 هوائيات SMA خارجية</span></div>
+            <div class="spec-row"><span class="spec-k">الصوت</span><span class="spec-v">مكبر WS2812</span></div>
+            <div class="spec-row"><span class="spec-k">الطاقة</span><span class="spec-v">USB-C</span></div>
+            <div class="spec-row"><span class="spec-k">الهيكل</span><span class="spec-v">أسود مطفي احترافي</span></div>
+          </div>
+        </div>
+        <div>
+          <div class="freq-box">
+            <div class="freq-title">// الترددات المدعومة</div>
+            <div class="freq-item"><div class="freq-row"><span class="freq-nm">بوابات المنازل</span><span class="freq-hz">433.92 MHz</span></div><div class="fbar-bg"><div class="fbar-fill" style="--w:90%"></div></div></div>
+            <div class="freq-item"><div class="freq-row"><span class="freq-nm">أجهزة التحكم</span><span class="freq-hz">315 MHz</span></div><div class="fbar-bg"><div class="fbar-fill" style="--w:68%;animation-delay:.2s"></div></div></div>
+            <div class="freq-item"><div class="freq-row"><span class="freq-nm">أنظمة الأمان</span><span class="freq-hz">868 MHz</span></div><div class="fbar-bg"><div class="fbar-fill" style="--w:80%;animation-delay:.4s"></div></div></div>
+            <div class="freq-item"><div class="freq-row"><span class="freq-nm">IoT وأجهزة ذكية</span><span class="freq-hz">915 MHz</span></div><div class="fbar-bg"><div class="fbar-fill" style="--w:60%;animation-delay:.6s"></div></div></div>
+            <div class="freq-item"><div class="freq-row"><span class="freq-nm">النطاق الكامل</span><span class="freq-hz">300 – 928 MHz</span></div><div class="fbar-bg"><div class="fbar-fill" style="--w:100%;animation-delay:.8s"></div></div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ORDER -->
+<div class="order-bg" id="order">
+  <canvas class="waveLayer" id="waveOrder"></canvas>
+  <div class="sec">
+    <div class="sec-hd">
+      <div class="sec-tag">// اطلب الآن</div>
+      <h2>احصل على جهازك</h2>
+      <p class="sec-desc">جاهز للشحن — مبرمج ومجهز من اليوم الأول</p>
+    </div>
+    <div class="order-wrap">
+      <div>
+        <div class="price" id="displayPrice">232 ر.س</div>
+        <div class="price-sub">شامل البرمجة والتخصيص</div>
+        <ul class="order-feats">
+          <li><span class="chk">✓</span> مبرمج وجاهز للاستخدام فوراً</li>
+          <li><span class="chk">✓</span> ثلاث هوائيات SMA مرفقة</li>
+          <li><span class="chk">✓</span> شحن سريع داخل المملكة</li>
+          <li><span class="chk">✓</span> دعم فني بعد البيع</li>
+          <li><span class="chk">✓</span> ضمان الجودة</li>
+        </ul>
+      </div>
+      <div class="oform">
+        <div>
+          <div class="flabel">الكمية</div>
+          <div class="qty-row">
+            <button class="qty-btn" onclick="chQty(1)">+</button>
+            <div class="qty-n" id="qtyN">1</div>
+            <button class="qty-btn" onclick="chQty(-1)">−</button>
+            <div style="font-size:12px;color:var(--text);margin-right:8px;font-family:'Cairo',sans-serif;">× 232 ر.س</div>
+          </div>
+        </div>
+        <div><div class="flabel">الاسم</div><input class="finput" type="text" placeholder="اسمك الكريم" id="oName"></div>
+        <div><div class="flabel">رقم الجوال</div><input class="finput" type="tel" placeholder="05xxxxxxxx" id="oPhone"></div>
+        <div><div class="flabel">المدينة</div><input class="finput" type="text" placeholder="الرياض / جدة / ..." id="oCity"></div>
+        <button class="btn-p" style="width:100%;margin-top:8px;" onclick="submitOrder()">أرسل الطلب ←</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <div class="foot-logo">CC1101+ // LILYGO</div>
+  <p class="foot-txt">جهاز إلكتروني متخصص للهواة والمطورين · المملكة العربية السعودية</p>
+</footer>
+
+<!-- SUCCESS MODAL -->
+<div class="modal-bg" id="modal">
+  <div class="modal">
+    <button class="modal-close" onclick="document.getElementById('modal').classList.remove('open')">✕</button>
+    <h3>✓ تم استلام طلبك</h3>
+    <p>شكراً! سيتم التواصل معك خلال 24 ساعة لتأكيد الطلب والشحن.</p>
+    <button class="btn-p" style="width:100%" onclick="document.getElementById('modal').classList.remove('open')">حسناً</button>
+  </div>
+</div>
+
+<script>
+// ── WAVE ENGINE ──
+function createWave(id, opts){
+  const c = document.getElementById(id);
+  if(!c) return;
+  const ctx = c.getContext('2d');
+  let W, H, mx, my, t = 0;
+  const useMouse = opts.mouse !== false;
+
+  function resize(){
+    const p = c.parentElement;
+    W = c.width  = p.offsetWidth;
+    H = c.height = p.offsetHeight;
+    mx = W/2; my = H/2;
+  }
+  resize();
+  window.addEventListener('resize', resize);
+
+  if(useMouse){
+    c.parentElement.addEventListener('mousemove', e => {
+      const r = c.getBoundingClientRect();
+      mx = e.clientX - r.left;
+      my = e.clientY - r.top;
+    });
+  }
+
+  function draw(){
+    ctx.clearRect(0,0,W,H);
+    const n = opts.waves || 5;
+    for(let i = 0; i < n; i++){
+      const freq  = 0.007 + i*0.003 + (useMouse ? (mx/W)*0.003 : 0);
+      const amp   = 16 + i*9 + (useMouse ? (my/H)*10 : 0);
+      const phase = t * (opts.speed || 0.012) * (1 + i*0.25);
+      const alpha = Math.max(0.03, 0.11 - i*0.016);
+      ctx.beginPath();
+      ctx.moveTo(0, H*0.5);
+      for(let x = 0; x <= W; x += 4){
+        const y = H*0.5
+          + Math.sin(x*freq + phase)*amp
+          + Math.sin(x*freq*1.8 + phase*1.4)*(amp*.35)
+          + Math.cos(x*freq*.5  + phase*.6 )*(amp*.25);
+        ctx.lineTo(x, y);
+      }
+      ctx.strokeStyle = `rgba(0,212,255,${alpha})`;
+      ctx.lineWidth = 1.5;
+      ctx.stroke();
+    }
+    if(useMouse){
+      const p = (Math.sin(t*.05)+1)/2;
+      [1,2].forEach((k,idx) => {
+        ctx.beginPath();
+        ctx.arc(mx, my, 20*k + p*35*k, 0, Math.PI*2);
+        ctx.strokeStyle = `rgba(0,212,255,${(.06-idx*.02)+p*.06})`;
+        ctx.lineWidth = 1;
+        ctx.stroke();
+      });
+    }
+    t++;
+    requestAnimationFrame(draw);
+  }
+  draw();
+}
+
+createWave('waveBg',    {waves:7, speed:.013, mouse:true});
+createWave('waveFeat',  {waves:4, speed:.009, mouse:false});
+createWave('waveSpec',  {waves:4, speed:.008, mouse:false});
+createWave('waveOrder', {waves:5, speed:.011, mouse:true});
+
+// ── 3D TILT ──
+const wrap = document.getElementById('imgWrap');
+const hero = document.getElementById('heroSection');
+let tRY=0, tRX=0, cRY=0, cRX=0;
+hero.addEventListener('mousemove', e => {
+  const r = hero.getBoundingClientRect();
+  tRY =  (e.clientX - r.left - r.width/2)  / (r.width/2)  * 22;
+  tRX = -(e.clientY - r.top  - r.height/2) / (r.height/2) * 14;
+});
+hero.addEventListener('mouseleave', () => { tRY=0; tRX=0; });
+(function loop(){
+  cRY += (tRY-cRY)*.07;
+  cRX += (tRX-cRX)*.07;
+  wrap.style.transform = `perspective(900px) rotateY(${cRY}deg) rotateX(${cRX}deg)`;
+  requestAnimationFrame(loop);
+})();
+
+// ── ORDER ──
+let qty = 1;
+function chQty(d){
+  qty = Math.max(1, qty+d);
+  document.getElementById('qtyN').textContent = qty;
+  document.getElementById('displayPrice').textContent = (qty*232) + ' ر.س';
+}
+function submitOrder(){
+  const n = document.getElementById('oName').value.trim();
+  const p = document.getElementById('oPhone').value.trim();
+  const c = document.getElementById('oCity').value.trim();
+  if(!n||!p||!c){ alert('يرجى تعبئة جميع الحقول'); return; }
+  document.getElementById('modal').classList.add('open');
+  ['oName','oPhone','oCity'].forEach(id => document.getElementById(id).value='');
+  qty=1;
+  document.getElementById('qtyN').textContent='1';
+  document.getElementById('displayPrice').textContent='232 ر.س';
+}
+function s(id){ document.getElementById(id).scrollIntoView({behavior:'smooth'}); }
+</script>
+</body>
+</html>
