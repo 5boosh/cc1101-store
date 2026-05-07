@@ -173,7 +173,7 @@ footer{background:#030b13;border-top:1px solid #0a1e2a;padding:32px 48px;text-al
   <canvas id="waveBg"></canvas>
   <div class="hero-inner">
     <div class="img-wrap" id="imgWrap">
-      <img class="device-img" src="https://i.ibb.co/5gXmkPQz/image.png" alt="LILYGO T-Embed CC1101 Plus"/>
+      <img class="device-img" src="https://raw.githubusercontent.com/5boosh/cc1101-store/main/test.png" alt="LILYGO T-Embed CC1101 Plus"/>
       <div class="bracket tl"></div><div class="bracket tr"></div>
       <div class="bracket bl"></div><div class="bracket br"></div>
       <div class="float-pill fp1"><div class="pdot" style="background:#00d4ff"></div><div class="ptxt">ESP32-S3 · 240MHz</div></div>
@@ -424,6 +424,23 @@ function submitOrder(){
   const p = document.getElementById('oPhone').value.trim();
   const c = document.getElementById('oCity').value.trim();
   if(!n||!p||!c){ alert('يرجى تعبئة جميع الحقول'); return; }
+
+  const total = qty * 232;
+  const msg = `🔧 طلب جديد - LILYGO CC1101+\n\nالاسم: ${n}\nالجوال: ${p}\nالمدينة: ${c}\nالكمية: ${qty}\nالإجمالي: ${total} ر.س`;
+
+  // WhatsApp
+  const waNum = '966503668606';
+  const waURL = `https://wa.me/${waNum}?text=${encodeURIComponent(msg)}`;
+  window.open(waURL, '_blank');
+
+  // Email
+  const emailTo = 'aakkaakkaa331@gmail.com';
+  const subject = encodeURIComponent(`طلب جديد - ${n} - CC1101+`);
+  const body = encodeURIComponent(msg);
+  setTimeout(() => {
+    window.open(`mailto:${emailTo}?subject=${subject}&body=${body}`, '_blank');
+  }, 1000);
+
   document.getElementById('modal').classList.add('open');
   ['oName','oPhone','oCity'].forEach(id => document.getElementById(id).value='');
   qty=1;
